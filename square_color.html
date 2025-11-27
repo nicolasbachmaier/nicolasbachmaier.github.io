@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chess Square Color</title>
+        <meta name="description" content="Chess Square Color is a simple game designed to reinforce your chess coordinate system knowledge.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="index, follow">
+        <meta name="keywords" content="Nicolas Bachmaier, blindfold chess, chess square color">
+        <meta name="author" content="Nicolas Bachmaier">
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+
+            body {
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                box-sizing: border-box;
+            }
+
+            #frame-overlay {
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                box-sizing: border-box;
+                z-index: 3;
+            }
+
+            #frame-overlay.correct {
+                border: 6px solid #00ff00;
+                box-shadow: 0 0 25px 6px rgba(0, 255, 0, 0.8);
+            }
+
+            #frame-overlay.wrong {
+                border: 6px solid #ff0000;
+                box-shadow: 0 0 25px 6px rgba(255, 0, 0, 0.8);
+            }
+
+            #white,
+            #black {
+                position: absolute;
+                top: 0;
+                width: 50vw;
+                height: 100vh;
+                z-index: 0;
+                overflow: hidden;
+            }
+
+            #white {
+                left: 0;
+                background: white;
+            }
+
+            #black {
+                right: 0;
+                background: black;
+            }
+
+            #white::after,
+            #black::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                transition: opacity 0.15s ease;
+                pointer-events: none;
+            }
+
+            #white::after {
+                background: rgba(0, 0, 0, 0.08);
+            }
+
+            #black::after {
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+            #white:hover::after,
+            #black:hover::after {
+                opacity: 1;
+            }
+
+            #white:hover,
+            #black:hover {
+                cursor: pointer;
+            }
+
+            #square {
+                color: gray;
+                font-size: 300px;
+                z-index: 1;
+                position: relative;
+                pointer-events: none;
+                font-family: 'Courier New', monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="frame-overlay"></div>
+
+        <div id="white"></div>
+        <div id="black"></div>
+        <h1 id="square"></h1>
+        <script>
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min)) + Math.ceil(min)); 
+            }
+            function generate_chessboard() {
+                let board = []
+                for(let i=0; i < 8; i++){
+                    let row = []
+                    for(let k=0; k < 8; k++){
+                        row.push((i+k) % 2) // Black: 0, White: 1
+                    }
+                    board.push(row)
+                }
+                return board
+            }
+            function random_square(board){
+                let col = getRandomInt(97, 105)
+                let row = getRandomInt(1, 9)
+                console.log(row)
+                let color = board[row-1][col-97]
+                document.getElementById("square").innerHTML = (String.fromCharCode(col)+row)
+                return color
+            }
+
+            function showFrame(isCorrect) {
+                const overlay = document.getElementById('frame-overlay');
+                overlay.classList.remove('correct', 'wrong');
+                const cls = isCorrect ? 'correct' : 'wrong';
+                overlay.classList.add(cls);
+                setTimeout(() => {
+                    overlay.classList.remove(cls);
+                }, 400);
+            }
+
+            let board = generate_chessboard()
+            let color;
+            color = random_square(board)
+
+            const white_div = document.getElementById("white");
+            const black_div = document.getElementById("black"); 
+
+            white_div.addEventListener("click", function () {
+                if (color == 1){
+                    showFrame(true);
+                } else {
+                    showFrame(false);
+                }
+                color = random_square(board)
+            });
+            black_div.addEventListener("click", function () {
+                console.log(color)
+                if (color == 0){
+                    showFrame(true);
+                } else {
+                    showFrame(false);
+                }
+                color = random_square(board)
+            });
+        </script>
+    </body>
+</html>
